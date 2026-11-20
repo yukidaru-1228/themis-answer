@@ -1,9 +1,10 @@
-html:has(.answers-page){scrollbar-gutter:stable}
+html:has(.answers-page){overflow:hidden}
 html.answer-modal-open{overflow:hidden}
-.answers-page{--answers-top:120px;--answers-bottom:82px}
+.answers-page{height:100dvh;overflow:hidden;--answers-top:120px;--answers-bottom:82px}
 .answers-page .masthead{position:fixed}
-#answers-stage{position:fixed;top:var(--answers-top);bottom:var(--answers-bottom);left:0;width:100%;overflow:clip;color:var(--white);mask-image:linear-gradient(transparent,#000 5%,#000 94%,transparent)}
-#answers-roll{width:min(100%,1040px);margin:auto;padding:0 32px;will-change:transform}
+#answers-stage{position:fixed;top:var(--answers-top);bottom:var(--answers-bottom);left:0;width:100%;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:none;color:var(--white);mask-image:linear-gradient(transparent,#000 5%,#000 94%,transparent)}
+#answers-roll{width:min(100%,1040px);margin:auto;padding:0 32px}
+#answers-stage::-webkit-scrollbar{display:none}
 .answers-hero{text-align:center;min-height:calc(100svh - var(--answers-top) - var(--answers-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:46px 0 54px}
 .answers-kicker{font-size:16px;letter-spacing:.15em;margin:0 0 20px}
 .answers-hero h1{font-size:clamp(36px,5vw,60px);line-height:1.7;letter-spacing:.15em;padding:0 0 0 .15em;margin:0}
@@ -37,6 +38,8 @@ html.answer-modal-open{overflow:hidden}
 .puzzle-trigger:focus-visible{outline:2px solid #ff9a95;outline-offset:-4px}
 /* Accumulating brush marks are drawn in place, with soft, bristled edges. */
 .puzzle-panel{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden;pointer-events:none;transition:visibility 0s .2s;contain:paint}
+.ink-static{position:absolute;left:-9.5%;top:-13.418%;width:119%;height:126.836%;max-width:none;pointer-events:none;visibility:hidden}
+.puzzle-card.is-open.ink-settled .ink-static{visibility:visible}
 .ink-brush{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none}
 .ink-brush-stroke{stroke-dasharray:1 1;stroke-dashoffset:1}
 .puzzle-card.is-open .puzzle-panel{visibility:visible;pointer-events:auto;transition-delay:0s;cursor:pointer}
@@ -57,7 +60,7 @@ html.answer-modal-open{overflow:hidden}
 .answers-footer p{margin:0}
 .answers-footer a{color:var(--ink);text-underline-offset:5px;padding:12px 0;white-space:nowrap}
 .answer-dialog{inset:0;width:min(1120px,calc(100% - 40px));max-width:none;max-height:calc(100dvh - 40px);margin:auto;padding:0;border:1px solid #bbae98;border-radius:4px;background:var(--paper);color:var(--ink);box-shadow:0 24px 100px #0005;overflow:hidden}
-.answer-dialog::backdrop{background:rgba(20,18,17,.42);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.answer-dialog::backdrop{background:rgba(20,18,17,.42);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .answer-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;border-bottom:1px solid #cdbfa8;background:var(--paper)}
 .answer-dialog-header p{font-family:var(--sans);font-size:12px;letter-spacing:.12em;color:#736451;margin:0 0 4px}
 .answer-dialog-header h2{display:block;font-size:23px;line-height:1.7;letter-spacing:.13em;margin:0}
@@ -83,9 +86,9 @@ html.answer-modal-open{overflow:hidden}
 .answer-dialog[open]::backdrop{animation:answer-backdrop-in .7s ease both}
 .answer-dialog.is-closing{animation:answer-dialog-out .28s ease both;pointer-events:none}
 .answer-dialog.is-closing::backdrop{animation:answer-backdrop-out .28s ease both}
-@keyframes answer-dialog-in{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
+@keyframes answer-dialog-in{from{opacity:0}to{opacity:1}}
 @keyframes answer-dialog-out{from{opacity:1}to{opacity:0}}
-@keyframes answer-backdrop-in{from{opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}to{opacity:1;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}}
+@keyframes answer-backdrop-in{from{opacity:0}to{opacity:1}}
 @keyframes answer-backdrop-out{from{opacity:1}to{opacity:0}}
 @media(max-width:600px){
  .answers-page{--answers-top:112px;--answers-bottom:78px}
@@ -123,5 +126,5 @@ html.answer-modal-open{overflow:hidden}
 }
 @media(max-width:360px){.overlay-label{display:none}.room-heading h3{font-size:19px}}
 @media(max-height:670px){.answers-page{--answers-top:86px;--answers-bottom:68px}.answers-hero{padding:20px 0}.answers-hero h1{font-size:32px}.answers-kicker{margin-bottom:10px}.answers-hero>p:nth-of-type(2){margin-top:12px}.answers-skip{margin-top:12px}.answers-skip .scroll-line{height:16px}}
-@media(prefers-reduced-motion:reduce){#answers-roll{will-change:auto}.puzzle-panel,.puzzle-panel-content,.puzzle-card.is-open .puzzle-panel-content{transition:none}.puzzle-card.is-open .ink-brush-stroke{animation:none;stroke-dashoffset:0}.answer-dialog[open],.answer-dialog[open]::backdrop,.answer-dialog.is-closing,.answer-dialog.is-closing::backdrop{animation:none}}
-@media print{.answers-page .masthead,.answers-footer,.answers-return,.answer-dialog,.answers-skip,#answers-scroll-space,.puzzle-toggle,.puzzle-panel{display:none!important}#answers-stage{position:static;mask-image:none;color:#000;overflow:visible}#answers-roll{width:100%;transform:none!important}.answers-hero{min-height:0;padding:24px}.answers-hero>p:nth-of-type(2),.answers-section-heading>p,.room-heading p{color:#333}.answers-content{padding:20px 0}.puzzle-card{break-inside:avoid;background:#fff}.puzzle-trigger{pointer-events:none;color:#000}}
+@media(prefers-reduced-motion:reduce){.puzzle-panel,.puzzle-panel-content,.puzzle-card.is-open .puzzle-panel-content{transition:none}.puzzle-card.is-open .ink-brush-stroke{animation:none;stroke-dashoffset:0}.answer-dialog[open],.answer-dialog[open]::backdrop,.answer-dialog.is-closing,.answer-dialog.is-closing::backdrop{animation:none}}
+@media print{.answers-page .masthead,.answers-footer,.answers-return,.answer-dialog,.answers-skip,.puzzle-toggle,.puzzle-panel{display:none!important}#answers-stage{position:static;mask-image:none;color:#000;overflow:visible}#answers-roll{width:100%;transform:none!important}.answers-hero{min-height:0;padding:24px}.answers-hero>p:nth-of-type(2),.answers-section-heading>p,.room-heading p{color:#333}.answers-content{padding:20px 0}.puzzle-card{break-inside:avoid;background:#fff}.puzzle-trigger{pointer-events:none;color:#000}}

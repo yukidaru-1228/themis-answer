@@ -11,22 +11,57 @@
   let revealStart = 0;
   let revealDistance = 1;
   let returning = false;
+  let framePending = false;
+  let lastY = -1;
+  let lastReveal = -1;
+  let lastHidden = null;
+  let lastReady = null;
+  let lastProgress = -1;
+  let lastPercent = -1;
+
+  function scheduleRender() {
+    if (framePending) return;
+    framePending = true;
+    requestAnimationFrame(render);
+  }
 
   function render() {
+    framePending = false;
     const y = Math.min(maxScroll, Math.max(0, window.scrollY));
-    credits.style.transform = `translate3d(0,${-y}px,0)`;
+    if (y !== lastY) {
+      credits.style.transform = `translate3d(0,${-y}px,0)`;
+      lastY = y;
+    }
     // The final statement stays at the center; only its opacity follows scrolling.
     const reveal = Math.min(1, Math.max(0, (y - revealStart) / revealDistance));
-    resolution.style.opacity = String(reveal * reveal * (3 - 2 * reveal));
-    resolution.setAttribute('aria-hidden', String(reveal === 0));
+    if (reveal !== lastReveal) {
+      resolution.style.opacity = String(reveal * reveal * (3 - 2 * reveal));
+      lastReveal = reveal;
+    }
+    const hidden = reveal === 0;
+    if (hidden !== lastHidden) {
+      resolution.setAttribute('aria-hidden', String(hidden));
+      lastHidden = hidden;
+    }
     const resolutionReady = reveal >= 0.98;
-    resolution.inert = !resolutionReady;
-    resolution.classList.toggle('is-ready', resolutionReady);
+    if (resolutionReady !== lastReady) {
+      resolution.inert = !resolutionReady;
+      resolution.classList.toggle('is-ready', resolutionReady);
+      lastReady = resolutionReady;
+    }
     const fraction = y / maxScroll;
-    progress.value = Math.round(fraction * 1000);
-    progress.style.setProperty('--progress', `${fraction * 100}%`);
-    percent.value = `${Math.round(fraction * 100)}%`;
-    progress.setAttribute('aria-valuetext', `物語の${Math.round(fraction * 100)}パーセント`);
+    const progressValue = Math.round(fraction * 1000);
+    if (progressValue !== lastProgress) {
+      progress.value = progressValue;
+      progress.style.setProperty('--progress', `${progressValue / 10}%`);
+      lastProgress = progressValue;
+    }
+    const percentValue = Math.round(fraction * 100);
+    if (percentValue !== lastPercent) {
+      percent.value = `${percentValue}%`;
+      progress.setAttribute('aria-valuetext', `物語の${percentValue}パーセント`);
+      lastPercent = percentValue;
+    }
     if (returning && y < 1) {
       returning = false;
       status.textContent = '最初に戻りました';
@@ -45,7 +80,7 @@
     } else {
       space.style.height = `${maxScroll + window.innerHeight}px`;
     }
-    render();
+    scheduleRender();
   }
 
   function restart(event) {
@@ -68,7 +103,7 @@
     document.getElementById('ch1').tabIndex = -1;
     document.getElementById('ch1').focus({preventScroll: true});
   });
-  window.addEventListener('scroll', render, {passive: true});
+  window.addEventListener('scroll', scheduleRender, {passive: true});
   window.addEventListener('resize', measure);
   new ResizeObserver(measure).observe(credits);
   if (document.fonts) document.fonts.ready.then(measure);

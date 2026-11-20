@@ -9,28 +9,45 @@
   let returnFocus = null;
   let imageRequest = 0;
   const stage = document.getElementById('answers-stage');
-  const roll = document.getElementById('answers-roll');
-  const scrollSpace = document.getElementById('answers-scroll-space');
+  const brushTemplate = document.getElementById('ink-brush-template');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let maxScroll = 0;
   let closeTimer = null;
-
-  function renderScroll() {
-    const y = Math.min(maxScroll, Math.max(0, window.scrollY));
-    roll.style.transform = `translate3d(0,${-y}px,0)`;
-  }
-
-  function measureScroll() {
-    maxScroll = Math.max(0, roll.scrollHeight - stage.clientHeight + 32);
-    scrollSpace.style.height = `${maxScroll + window.innerHeight}px`;
-    renderScroll();
-  }
 
   function scrollToElement(element) {
     const stageRect = stage.getBoundingClientRect();
     const elementRect = element.getBoundingClientRect();
-    const target = window.scrollY + elementRect.top - stageRect.top - 28;
-    window.scrollTo({top: Math.min(maxScroll, Math.max(0, target)), behavior: reducedMotion.matches ? 'instant' : 'smooth'});
+    const target = stage.scrollTop + elementRect.top - stageRect.top - 28;
+    const maxScroll = Math.max(0, stage.scrollHeight - stage.clientHeight);
+    stage.scrollTo({top: Math.min(maxScroll, Math.max(0, target)), behavior: reducedMotion.matches ? 'instant' : 'smooth'});
+  }
+
+  function paintInk(card) {
+    const panel = card.querySelector('.puzzle-panel');
+    panel.querySelector('.ink-brush')?.remove();
+    card.classList.remove('ink-settled');
+    if (!panel.querySelector('.ink-static')) {
+      const image = document.createElement('img');
+      image.className = 'ink-static';
+      image.src = '../assets/ink-block.webp';
+      image.alt = '';
+      image.decoding = 'async';
+      image.setAttribute('aria-hidden', 'true');
+      panel.prepend(image);
+    }
+    if (reducedMotion.matches) {
+      card.classList.add('ink-settled');
+      return;
+    }
+    const brush = brushTemplate.content.firstElementChild.cloneNode(true);
+    const maskId = `brush-mask-${card.dataset.puzzle}`;
+    brush.querySelector('mask').id = maskId;
+    brush.querySelector('[mask]').setAttribute('mask', `url(#${maskId})`);
+    panel.prepend(brush);
+    brush.querySelector('[data-paint-end]').addEventListener('animationend', () => {
+      if (!brush.isConnected || !card.classList.contains('is-open')) return;
+      card.classList.add('ink-settled');
+      brush.remove();
+    }, {once: true});
   }
 
   document.querySelectorAll('a[href="#puzzles"]').forEach(link => {
@@ -48,15 +65,28 @@
       scrollToElement(event.target.closest('.puzzle-card') || event.target);
     }
   });
-  window.addEventListener('scroll', renderScroll, {passive: true});
-  window.addEventListener('resize', measureScroll);
-  new ResizeObserver(measureScroll).observe(roll);
-  if (document.fonts) document.fonts.ready.then(measureScroll);
-  measureScroll();
-
+  // Preserve page-scroll shortcuts when focus is outside the native scroll area.
+  document.addEventListener('keydown', event => {
+    if (dialog.open || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (document.activeElement !== document.body && document.activeElement !== document.documentElement) return;
+    const page = stage.clientHeight * 0.85;
+    let top;
+    switch (event.key) {
+      case 'PageDown': top = stage.scrollTop + page; break;
+      case 'PageUp': top = stage.scrollTop - page; break;
+      case 'ArrowDown': top = stage.scrollTop + 48; break;
+      case 'ArrowUp': top = stage.scrollTop - 48; break;
+      case ' ': top = stage.scrollTop + (event.shiftKey ? -page : page); break;
+      case 'Home': top = 0; break;
+      case 'End': top = stage.scrollHeight - stage.clientHeight; break;
+      default: return;
+    }
+    event.preventDefault();
+    stage.scrollTo({top: Math.max(0, Math.min(stage.scrollHeight - stage.clientHeight, top)), behavior: reducedMotion.matches ? 'instant' : 'smooth'});
+  });
   document.querySelector('.answers-top').addEventListener('click', event => {
     event.preventDefault();
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    stage.scrollTo({top: 0, behavior: reducedMotion.matches ? 'instant' : 'smooth'});
   });
 
   document.querySelectorAll('.puzzle-card').forEach(card => {
@@ -65,6 +95,7 @@
     const label = card.querySelector('.puzzle-toggle');
     function toggleAnswer() {
       const open = !card.classList.contains('is-open');
+      if (open) paintInk(card);
       card.classList.toggle('is-open', open);
       triggers.forEach(trigger => {
         trigger.setAttribute('aria-expanded', String(open));
