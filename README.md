@@ -35,3 +35,11 @@ python3 -m http.server 8000 --directory dist
 ## 公式資料
 
 https://vercel.com/docs/builds/configure-a-build
+
+## 筆跡素材
+
+添付PDFから透過を保ってWebPへ書き出しています。
+
+- `ink-block.webp`：アセット 1.pdf。解答を描き出すインクに使用。
+- `ink-strip.webp`：アセット 2.pdf。現在のページを示すメニューと解答ページへのボタンに使用。
+- `ink-backdrop.webp`：アセット 3１.pdf。両ページの背景の筆跡に使用。
