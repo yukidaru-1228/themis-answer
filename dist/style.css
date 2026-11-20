@@ -16,4 +16,20 @@
 .key-point{color:var(--emphasis);font-weight:700}
 @media print{.key-point{color:#a21920}.masthead,.control-dock,.ink-landscape,.paper,.skip-link,#scroll-space{display:none}#stage{position:static;overflow:visible;color:#000;mask-image:none}#credits{width:100%;transform:none!important}.opening{min-height:0;padding:40px 0}.chapter p{font-size:12pt;line-height:1.8}.chapter blockquote{color:#000}.scroll-hint{display:none}.evidence{break-inside:avoid}.evidence figcaption{color:#333}.resolution{position:static;min-height:0;opacity:1!important;visibility:visible!important}}
 
-.site-nav{display:flex;align-items:center;gap:26px;font-family:var(--sans)}.site-nav a{display:block;color:var(--ink);font-size:14px;letter-spacing:.06em;line-height:1.8;text-decoration:none;padding:7px 0;border-bottom:1px solid transparent}.site-nav a[aria-current="page"]{border-bottom-color:#a52529}.site-nav a:hover{color:#a52529}@media(max-width:600px){.site-nav{flex-direction:column;align-items:flex-end;gap:0}.site-nav a{font-size:14px;padding:3px 0}}
+/* Brush tabs keep the current page clear on the paper header. */
+.site-nav{display:flex;align-items:center;gap:12px;font-family:var(--serif)}
+.site-nav a{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:42px;padding:8px 20px;border:1px solid #b7a68b;color:var(--ink);font-size:14px;letter-spacing:.08em;line-height:1.8;text-decoration:none;white-space:nowrap;transition:color .2s,background-color .2s}
+.site-nav a::before{content:"";position:absolute;inset:-5px -7px;z-index:-1;pointer-events:none;background:url('assets/nav-ink.svg') center/100% 100% no-repeat;opacity:0}
+.site-nav a[aria-current="page"]{border-color:transparent;color:var(--white);font-weight:700}
+.site-nav a[aria-current="page"]::before{opacity:1}
+.site-nav a:not([aria-current="page"]):hover{color:var(--red);border-color:var(--red);background:#ffffff45}
+.site-nav a[aria-current="page"]:hover{color:#fff}
+.answers-cta{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:52px;padding:14px 26px;background:var(--paper);border:1px solid #e1d2b6;color:var(--ink);font-size:16px;line-height:1.6;letter-spacing:.12em;text-decoration:none;transition:background-color .2s,color .2s}
+.answers-cta::before{content:"";width:2px;height:18px;background:var(--red)}
+.resolution.is-ready .answers-cta{pointer-events:auto}
+.answers-cta:hover{background:#fffaf0;color:#982429}
+.answers-cta:focus-visible{outline:2px solid #ff9a95;outline-offset:5px}
+@media(max-width:600px){.site-nav{flex-direction:column;align-items:stretch;gap:4px}.site-nav a{min-height:34px;padding:4px 12px;font-size:14px;letter-spacing:.05em}.site-nav a::before{inset:-3px -5px}.answers-cta{min-height:48px;padding:12px 22px;font-size:15px}}
+@media(max-height:670px) and (max-width:600px){.site-nav{gap:2px}.site-nav a{min-height:29px;padding:2px 10px;line-height:1.6}}
+@media(prefers-reduced-motion:reduce){.site-nav a,.answers-cta{transition:none}}
+@media print{.answers-cta{display:none}}

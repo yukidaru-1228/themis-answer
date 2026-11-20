@@ -19,6 +19,9 @@
     const reveal = Math.min(1, Math.max(0, (y - revealStart) / revealDistance));
     resolution.style.opacity = String(reveal * reveal * (3 - 2 * reveal));
     resolution.setAttribute('aria-hidden', String(reveal === 0));
+    const resolutionReady = reveal >= 0.98;
+    resolution.inert = !resolutionReady;
+    resolution.classList.toggle('is-ready', resolutionReady);
     const fraction = y / maxScroll;
     progress.value = Math.round(fraction * 1000);
     progress.style.setProperty('--progress', `${fraction * 100}%`);
