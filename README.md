@@ -20,6 +20,9 @@ VercelでGitHubリポジトリ `yukidaru-1228/themis-answer` をインポート�
 - `dist/style.css`: 配色・フォント・レイアウト
 - `dist/script.js`: スクロールと結末のフェード表示
 - `dist/assets/`: 証拠写真・ロゴ・筆跡
+- `dist/answers/index.html`: 19問の問題一覧・答え・解説
+- `dist/answers/answers.css` / `answers.js`: 2列表示・開閉・解答ポップアップ
+- `dist/answers/assets/`: 各問題と解答図の画像
 
 ## ローカルで表示
 
