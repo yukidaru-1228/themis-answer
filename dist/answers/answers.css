@@ -35,15 +35,15 @@ html.answer-modal-open{overflow:hidden}
 .puzzle-card.is-open{border-color:#e3bcb0}
 .puzzle-caption:hover{background:#ffffff0d}
 .puzzle-trigger:focus-visible{outline:2px solid #ff9a95;outline-offset:-4px}
-/* The brush sweeps across the image without changing the card's height. */
-.puzzle-panel{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden;pointer-events:none;transition:visibility 0s .75s}
-.puzzle-panel::before{content:"";position:absolute;inset:-1px -22% -1px -1px;background:linear-gradient(#11100ff0,#171412ed),url('../assets/ink.webp') center/cover;clip-path:polygon(0 0,85% 0,86% 8%,89% 6%,87% 19%,93% 17%,90% 27%,97% 25%,91% 36%,100% 34%,94% 45%,98% 50%,91% 57%,96% 61%,90% 69%,94% 76%,88% 81%,91% 89%,85% 92%,88% 100%,0 100%);transform:translateX(-104%);transition:transform .8s cubic-bezier(.22,.65,.28,1);pointer-events:none}
-.puzzle-panel::after{content:"";position:absolute;inset:0;opacity:0;background:url('../assets/ink.webp') center/150% 170% no-repeat;mix-blend-mode:screen;pointer-events:none;transition:opacity .6s .15s}
+/* Accumulating brush marks are drawn in place, with soft, bristled edges. */
+.puzzle-panel{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden;pointer-events:none;transition:visibility 0s .2s;contain:paint}
+.ink-brush{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none}
+.ink-brush-stroke{stroke-dasharray:1 1;stroke-dashoffset:1}
 .puzzle-card.is-open .puzzle-panel{visibility:visible;pointer-events:auto;transition-delay:0s;cursor:pointer}
-.puzzle-card.is-open .puzzle-panel::before{transform:translateX(0)}
-.puzzle-card.is-open .puzzle-panel::after{opacity:.1}
-.puzzle-panel-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;max-width:100%;padding:14px;opacity:0;transform:translateX(-8px);transition:opacity .2s,transform .2s;cursor:default}
-.puzzle-card.is-open .puzzle-panel-content{opacity:1;transform:none;transition:opacity .65s .3s,transform .65s .3s}
+.puzzle-card.is-open .ink-brush-stroke{animation:ink-paint-on .9s cubic-bezier(.3,.1,.22,1) var(--paint-delay,0s) both}
+@keyframes ink-paint-on{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.puzzle-panel-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;max-width:100%;padding:14px;opacity:0;transition:opacity .2s;cursor:default}
+.puzzle-card.is-open .puzzle-panel-content{opacity:1;transition:opacity .65s .82s}
 .overlay-label{font-family:var(--sans);font-size:14px;letter-spacing:.16em;color:#d9cfbe;margin:0}
 .overlay-answer{font-size:clamp(23px,3vw,36px);line-height:1.5;letter-spacing:.08em;font-weight:700;color:#ff9a95;margin:0;overflow-wrap:anywhere}
 .open-answer{min-height:44px;min-width:130px;max-width:100%;border:1px solid #e4d5bc99;background:#f8f1df0b;color:var(--white);font-family:var(--sans);font-size:14px;padding:9px 18px;letter-spacing:.04em}
@@ -123,5 +123,5 @@ html.answer-modal-open{overflow:hidden}
 }
 @media(max-width:360px){.overlay-label{display:none}.room-heading h3{font-size:19px}}
 @media(max-height:670px){.answers-page{--answers-top:86px;--answers-bottom:68px}.answers-hero{padding:20px 0}.answers-hero h1{font-size:32px}.answers-kicker{margin-bottom:10px}.answers-hero>p:nth-of-type(2){margin-top:12px}.answers-skip{margin-top:12px}.answers-skip .scroll-line{height:16px}}
-@media(prefers-reduced-motion:reduce){#answers-roll{will-change:auto}.puzzle-panel,.puzzle-panel::before,.puzzle-panel::after,.puzzle-panel-content,.puzzle-card.is-open .puzzle-panel-content{transition:none}.answer-dialog[open],.answer-dialog[open]::backdrop,.answer-dialog.is-closing,.answer-dialog.is-closing::backdrop{animation:none}}
+@media(prefers-reduced-motion:reduce){#answers-roll{will-change:auto}.puzzle-panel,.puzzle-panel-content,.puzzle-card.is-open .puzzle-panel-content{transition:none}.puzzle-card.is-open .ink-brush-stroke{animation:none;stroke-dashoffset:0}.answer-dialog[open],.answer-dialog[open]::backdrop,.answer-dialog.is-closing,.answer-dialog.is-closing::backdrop{animation:none}}
 @media print{.answers-page .masthead,.answers-footer,.answers-return,.answer-dialog,.answers-skip,#answers-scroll-space,.puzzle-toggle,.puzzle-panel{display:none!important}#answers-stage{position:static;mask-image:none;color:#000;overflow:visible}#answers-roll{width:100%;transform:none!important}.answers-hero{min-height:0;padding:24px}.answers-hero>p:nth-of-type(2),.answers-section-heading>p,.room-heading p{color:#333}.answers-content{padding:20px 0}.puzzle-card{break-inside:avoid;background:#fff}.puzzle-trigger{pointer-events:none;color:#000}}
